@@ -1,10 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
 
+const colorModes = {
+  green: { primary: '#33ff33', glow: '#33ff33', bg: '#0a0a0a', prompt: '#00ffaa', yellow: '#ffff00' },
+  amber: { primary: '#ffb000', glow: '#ffb000', bg: '#0a0800', prompt: '#ffcc00', yellow: '#ffe000' },
+  white: { primary: '#ffffff', glow: '#ffffff', bg: '#0a0a0a', prompt: '#cccccc', yellow: '#ffff00' }
+}
+
+const COMMANDS = ['help', 'about', 'projects', 'contact', 'clear', 'date', 'exit', 'ver', 'ls']
+
 function App() {
   const [history, setHistory] = useState([])
   const [input, setInput] = useState('')
   const [bootComplete, setBootComplete] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
+  const [colorMode, setColorMode] = useState('green')
+  const [currentTime, setCurrentTime] = useState('')
+  const [commandHistory, setCommandHistory] = useState([])
+  const [commandIndex, setCommandIndex] = useState(-1)
   const inputRef = useRef(null)
   const bottomRef = useRef(null)
 
@@ -29,6 +41,24 @@ function App() {
   ]
 
   const [bootOutput, setBootOutput] = useState([])
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      setCurrentTime(now.toLocaleString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }))
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     let delay = 0
@@ -158,6 +188,15 @@ Type CONTACT to get in touch!`, 20)
         })}
 Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`, 30)
         break
+      case 'exit':
+        await typeText('Goodbye!', 50)
+        break
+      case 'ver':
+        await typeText('RETRO TERMINAL v2.0 [DOS emulate]', 20)
+        break
+      case 'ls':
+        await typeText('Directory of C:\\', 20)
+        break
       case '':
         setHistory(prev => [...prev, { command: '', output: '' }])
         break
@@ -169,6 +208,10 @@ Type HELP for available commands.`, 20)
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (input.trim()) {
+      setCommandHistory(prev => [...prev, input])
+      setCommandIndex(-1)
+    }
     processCommand(input)
     setInput('')
   }
@@ -176,6 +219,37 @@ Type HELP for available commands.`, 20)
   const handleKeyDown = (e) => {
     if (e.key === 'c' && e.ctrlKey) {
       setHistory(prev => [...prev, { command: '^C', output: '' }])
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      const currentInput = input.trim().toLowerCase()
+      if (currentInput) {
+        const matches = COMMANDS.filter(cmd => cmd.startsWith(currentInput))
+        if (matches.length === 1) {
+          setInput(matches[0])
+        }
+      }
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      if (commandHistory.length > 0) {
+        const newIndex = commandIndex === -1 ? commandHistory.length - 1 : Math.max(commandIndex - 1, 0)
+        setCommandIndex(newIndex)
+        setInput(commandHistory[newIndex])
+      }
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      if (commandIndex !== -1) {
+        const newIndex = commandIndex + 1
+        if (newIndex >= commandHistory.length) {
+          setCommandIndex(-1)
+          setInput('')
+        } else {
+          setCommandIndex(newIndex)
+          setInput(commandHistory[newIndex])
+        }
+      }
     }
   }
 
@@ -194,16 +268,28 @@ Type HELP for available commands.`, 20)
   }
 
   return (
-    <div className="crt-screen" onClick={() => inputRef.current?.focus()}>
+    <div className="crt-screen" data-color={colorMode} onClick={() => inputRef.current?.focus()}>
       <div className="scanlines"></div>
       <div className="crt-glow">
-        <div className="terminal">
-          <div className="terminal-header">
-            <span className="terminal-title">RETRO-TERM v2.0</span>
-            <div className="terminal-buttons">
-              <span className="btn-minimize">_</span>
-              <span className="btn-maximize">□</span>
-              <span className="btn-close">×</span>
+        <div className="terminal" data-color={colorMode}>
+          <div className="terminal-header" data-color={colorMode}>
+            <div className="header-left">
+              <span className="terminal-title">RETRO-TERM v2.0</span>
+            </div>
+            <div className="header-center">
+              <span className="terminal-time">{currentTime}</span>
+            </div>
+            <div className="header-right">
+              <div className="color-switcher">
+                <button className={`color-btn green ${colorMode === 'green' ? 'active' : ''}`} onClick={() => setColorMode('green')} title="Green Mode">●</button>
+                <button className={`color-btn amber ${colorMode === 'amber' ? 'active' : ''}`} onClick={() => setColorMode('amber')} title="Amber Mode">●</button>
+                <button className={`color-btn white ${colorMode === 'white' ? 'active' : ''}`} onClick={() => setColorMode('white')} title="White Mode">●</button>
+              </div>
+              <div className="terminal-buttons">
+                <span className="btn-minimize">_</span>
+                <span className="btn-maximize">□</span>
+                <span className="btn-close">×</span>
+              </div>
             </div>
           </div>
           

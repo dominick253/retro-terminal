@@ -1,5 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+:root {
+  --terminal-primary: #33ff33;
+  --terminal-glow: #33ff33;
+  --terminal-bg: #0a0a0a;
+  --terminal-prompt: #00ffaa;
+  --terminal-yellow: #ffff00;
+  --terminal-border: #33ff33;
+  --terminal-shadow: rgba(51, 255, 51, 0.3);
+  --terminal-shadow-light: rgba(51, 255, 51, 0.1);
+}
+
+[data-color="amber"] {
+  --terminal-primary: #ffb000;
+  --terminal-glow: #ffb000;
+  --terminal-bg: #0a0800;
+  --terminal-prompt: #ffcc00;
+  --terminal-yellow: #ffe000;
+  --terminal-border: #ffb000;
+  --terminal-shadow: rgba(255, 176, 0, 0.3);
+  --terminal-shadow-light: rgba(255, 176, 0, 0.1);
+}
+
+[data-color="white"] {
+  --terminal-primary: #ffffff;
+  --terminal-glow: #ffffff;
+  --terminal-bg: #0a0a0a;
+  --terminal-prompt: #cccccc;
+  --terminal-yellow: #ffff00;
+  --terminal-border: #ffffff;
+  --terminal-shadow: rgba(255, 255, 255, 0.3);
+  --terminal-shadow-light: rgba(255, 255, 255, 0.1);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,15 +40,15 @@
 *,
 *::before,
 *::after {
-  color: #33ff33 !important;
+  color: var(--terminal-primary) !important;
 }
 
 html, body, div, span, p, a, li, td, th, label, h1, h2, h3, h4, h5, h6 {
-  color: #33ff33;
+  color: var(--terminal-primary);
 }
 
 ::selection {
-  background: #33ff33;
+  background: var(--terminal-primary);
   color: #000;
 }
 
@@ -31,7 +64,7 @@ html, body, #root {
 body {
   font-family: 'VT323', 'Courier New', monospace;
   background: #000;
-  color: #33ff33;
+  color: var(--terminal-primary);
 }
 
 .crt-screen {
@@ -102,12 +135,12 @@ body {
 .terminal {
   max-width: 900px;
   margin: 0 auto;
-  background: #0a0a0a;
-  border: 2px solid #33ff33;
+  background: var(--terminal-bg);
+  border: 2px solid var(--terminal-border);
   border-radius: 8px;
   box-shadow: 
-    0 0 20px rgba(51, 255, 51, 0.3),
-    0 0 60px rgba(51, 255, 51, 0.1),
+    0 0 20px var(--terminal-shadow),
+    0 0 60px var(--terminal-shadow-light),
     inset 0 0 100px rgba(51, 255, 51, 0.05);
   overflow: hidden;
 }
@@ -118,19 +151,77 @@ body {
   align-items: center;
   padding: 8px 12px;
   background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
-  border-bottom: 2px solid #33ff33;
+  border-bottom: 2px solid var(--terminal-border);
 }
 
 .terminal-title {
-  color: #33ff33;
+  color: var(--terminal-primary);
   font-size: 1.1rem;
   letter-spacing: 2px;
-  text-shadow: 0 0 10px #33ff33;
+  text-shadow: 0 0 10px var(--terminal-glow);
 }
 
-.terminal-buttons {
+.header-right {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
+}
+
+.terminal-time {
+  color: var(--terminal-primary);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--terminal-glow);
+  font-variant-numeric: tabular-nums;
+}
+
+.color-switcher {
+  display: flex;
+  gap: 6px;
+}
+
+.color-btn {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--terminal-border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.color-btn.green {
+  color: #33ff33;
+}
+
+.color-btn.amber {
+  color: #ffb000;
+}
+
+.color-btn.white {
+  color: #ffffff;
+}
+
+.color-btn:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 8px currentColor;
+}
+
+.color-btn.active {
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.color-btn.active::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
 }
 
 .terminal-buttons span {
@@ -151,7 +242,7 @@ body {
 }
 
 .btn-maximize {
-  background: #33ff33;
+  background: var(--terminal-primary);
   color: #000;
 }
 
@@ -179,8 +270,8 @@ body {
 }
 
 .boot-line {
-  color: #33ff33;
-  text-shadow: 0 0 8px #33ff33;
+  color: var(--terminal-primary);
+  text-shadow: 0 0 8px var(--terminal-glow);
   margin: 2px 0;
   letter-spacing: 1px;
 }
@@ -189,9 +280,9 @@ body {
   display: inline-block;
   width: 10px;
   height: 18px;
-  background: #33ff33;
+  background: var(--terminal-primary);
   animation: blink 0.8s step-end infinite;
-  box-shadow: 0 0 10px #33ff33;
+  box-shadow: 0 0 10px var(--terminal-glow);
   vertical-align: middle;
   margin-left: 4px;
 }
@@ -212,14 +303,14 @@ body {
 }
 
 .prompt {
-  color: #00ffaa;
+  color: var(--terminal-prompt);
   margin-right: 8px;
-  text-shadow: 0 0 8px #00ffaa;
+  text-shadow: 0 0 8px var(--terminal-prompt);
 }
 
 .cmd {
-  color: #ffff00;
-  text-shadow: 0 0 8px #ffff00;
+  color: var(--terminal-yellow);
+  text-shadow: 0 0 8px var(--terminal-yellow);
 }
 
 .output {
