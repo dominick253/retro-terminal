@@ -32,8 +32,6 @@ React + Vite.
 | `index.html` | Root project file or artifact. |
 | `package-lock.json` | Root project file or artifact. |
 | `package.json` | Root project file or artifact. |
-| `public/` | Public static assets. |
-| `src/` | Primary source code. |
 | `vite.config.js` | Root project file or artifact. |
 
 ## Scoped Contracts
